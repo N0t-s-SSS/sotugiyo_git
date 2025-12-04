@@ -7,16 +7,41 @@
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
 
-  <!-- CSS はあなたの指定の場所 -->
+  <!-- CSS -->
   <link rel="stylesheet" href="/assets/css/pages/map.css" />
 </head>
 <body>
-  <div id="map"></div>
 
-  <!-- 右上ハンバーガー -->
-  <button class="hamburger" id="menuBtn" aria-label="メニュー">
-    <span class="hamburger-lines"><span></span><span></span><span></span></span>
-  </button>
+  <!-- ▼ 固定ヘッダー -->
+  <header class="main-header">
+    <div class="header-left">
+      <div class="header-logo">CHATRA</div>
+    </div>
+
+    <div class="header-center">
+      <input
+        type="text"
+        id="locationSearchInput"
+        class="location-search"
+        placeholder="場所名で検索（例：東京 / 札幌 / 大阪 / 沖縄）"
+      />
+      <button id="locationSearchBtn" class="location-search-btn">検索</button>
+    </div>
+
+    <div class="header-right">
+      <button class="header-btn" id="goMyPage">👤</button>
+
+      <!-- 既存のハンバーガーアイコンをヘッダー内に配置 -->
+      <button class="hamburger" id="menuBtn" aria-label="メニュー">
+        <span class="hamburger-lines">
+          <span></span><span></span><span></span>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 地図本体 -->
+  <div id="map"></div>
 
   <!-- 右サイドパネル（メニュー） -->
   <aside class="side-panel" id="sidePanel">
@@ -37,8 +62,6 @@
         <label class="side-label" for="searchInput">ルーム名で検索</label>
         <input id="searchInput" type="text" class="side-input" placeholder="例：東京 / 札幌 / 温泉 / 友達募集" />
         <button id="searchBtn" class="side-search-btn">検索</button>
-        <!-- <div id="searchResult" class="side-result muted">検索結果はここに出ます（今はダミー）</div> -->
-        <!-- ✅ 검색 결과가 표시될 리스트 -->
         <ul id="searchResultList" class="room-list">
           <li class="muted">検索してください。</li>
         </ul>
@@ -50,12 +73,11 @@
         <ul class="room-list" id="roomList"></ul>
       </div>
 
-       <!-- チャットルーム履歴 -->
-       <div class="panel-view" id="view-list2" style="display:none;">
+      <!-- チャットルーム履歴 -->
+      <div class="panel-view" id="view-list2" style="display:none;">
         <div class="muted" style="margin-bottom:8px;">ルームを選択するとチャット画面に切り替わります。</div>
         <ul class="room-list" id="roomList2"></ul>
       </div>
-
 
       <!-- チャットビュー -->
       <div class="panel-view" id="view-chat" style="display:none;">
@@ -119,59 +141,30 @@
     </div>
   </div>
 
-  <!-- ✅ JS は外出し -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/assets/js/map.js"></script>
+  <!-- JS -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/js/map.js"></script>
 
-    <script>
+  <!-- 既存のチャット送信スクリプト（サーバ仕様に合わせてそのまま） -->
+  <script>
     const socket = io();
-    const roomId = window.location.pathname.split('/').pop(); // URL에서 roomId 추출
-    // const roomId = `room_${new Date().getTime()}`; // この処理はチャットルームを作る時に行います。
+    const roomId = window.location.pathname.split('/').pop();
 
-
-    socket.emit('join room', roomId); // 서버에 채팅방 참여 이벤트 전송
-
-
-    // const inviteForm = document.getElementById('invite-form');
-    // const inviteEmailInput = document.getElementById('invite-email');
-
-    // inviteForm.addEventListener('submit', function(e) {
-    //     e.preventDefault();
-    //     const emailToInvite = inviteEmailInput.value;
-
-    //     if (emailToInvite) {
-    //             // 서버로 'invite user' 이벤트를 보냅니다.
-    //             // 초대할 이메일과 현재 방 ID를 함께 전송합니다.
-    //         socket.emit('invite user', {
-    //                 recipientEmail: emailToInvite,
-    //                 roomId: roomId
-    //         });
-    //             inviteEmailInput.value = '';
-    //         }
-    //     });
-
-
+    socket.emit('join room', roomId);
 
     const form = document.getElementById('chatForm');
     const input = document.getElementById('chatInput');
 
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
+      e.preventDefault();
+      if (input.value) {
         socket.emit('chat message', {
-            roomId: roomId,
-            message: input.value
+          roomId: roomId,
+          message: input.value
         });
         input.value = '';
-        }
+      }
     });
-
-    // socket.on('chat message', function(msg) {
-    //     const item = document.createElement('li');
-    //     item.textContent = `${msg.sender}: ${msg.message}`;
-    //     document.getElementById('messages').appendChild(item);
-    //     window.scrollTo(0, document.body.scrollHeight);
-    // });
-    </script>
+  </script>
 </body>
 </html>
